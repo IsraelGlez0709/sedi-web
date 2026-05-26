@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEDI — Sistema Educativo Dinámico Interactivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #1E3A5F;
+  --navy-dark: #0F1F33;
+  --navy-mid: #2D5F8B;
+  --blue: #2563EB;
+  --blue-light: #3B82F6;
+  --blue-pale: #EFF6FF;
+  --green: #059669;
+  --green-light: #10B981;
+  --green-pale: #ECFDF5;
+  --amber: #D97706;
+  --amber-light: #F59E0B;
+  --amber-pale: #FFFBEB;
+  --purple: #7C3AED;
+  --purple-pale: #F5F3FF;
+  --bg: #F0F4F8;
+  --white: #FFFFFF;
+  --text: #1E293B;
+  --text-2: #475569;
+  --text-3: #94A3B8;
+  --border: #E2E8F0;
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.06);
+  --shadow-xl: 0 24px 64px rgba(0,0,0,.16);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--text);
+  background: var(--white);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5 { font-family: 'Outfit', sans-serif; line-height: 1.2; }
+
+/* ── UTILITIES ── */
+.container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 96px 0; }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  font-family: 'Outfit', sans-serif; letter-spacing: .02em;
+}
+.tag-blue { background: var(--blue-pale); color: var(--blue); }
+.tag-green { background: var(--green-pale); color: var(--green); }
+.tag-amber { background: var(--amber-pale); color: var(--amber); }
+.tag-purple { background: var(--purple-pale); color: var(--purple); }
+.tag-navy { background: rgba(30,58,95,.1); color: var(--navy); }
+
+/* ── SCROLL REVEAL ── */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity .65s ease, transform .65s ease; }
+.reveal-left.visible { opacity: 1; transform: none; }
+.reveal-right { opacity: 0; transform: translateX(32px); transition: opacity .65s ease, transform .65s ease; }
+.reveal-right.visible { opacity: 1; transform: none; }
+.delay-1 { transition-delay: .1s; }
+.delay-2 { transition-delay: .2s; }
+.delay-3 { transition-delay: .3s; }
+.delay-4 { transition-delay: .4s; }
+.delay-5 { transition-delay: .5s; }
+
+/* ══ NAVBAR ══ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0 32px; height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(255,255,255,.88); backdrop-filter: blur(16px);
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s, box-shadow .3s;
+}
+nav.scrolled { border-color: var(--border); box-shadow: var(--shadow-sm); }
+
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; font-family: 'Outfit', sans-serif;
+}
+.nav-logo-mark {
+  width: 36px; height: 36px; border-radius: 10px; background: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(30,58,95,.3);
+}
+.nav-logo-text { font-size: 20px; font-weight: 800; color: var(--navy); letter-spacing: -.5px; }
+.nav-logo-text span { color: var(--blue-light); }
+
+.nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+.nav-links a {
+  font-size: 14px; font-weight: 500; color: var(--text-2);
+  text-decoration: none; transition: color .2s;
+}
+.nav-links a:hover { color: var(--navy); }
+
+.nav-cta {
+  padding: 10px 22px; border-radius: var(--r-sm);
+  background: var(--navy); color: var(--white);
+  font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 600;
+  text-decoration: none; transition: background .2s, transform .15s;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-cta:hover { background: var(--navy-mid); transform: translateY(-1px); }
+
+.nav-mobile-btn { display: none; background: none; border: none; cursor: pointer; padding: 6px; }
+
+/* ══ HERO ══ */
+.hero {
+  min-height: 100vh; display: flex; align-items: center;
+  background: linear-gradient(155deg, var(--navy-dark) 0%, var(--navy) 45%, #1a4a7a 100%);
+  padding-top: 68px; position: relative; overflow: hidden;
+}
+
+.hero-bg-circles {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.hero-circle {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
+  animation: float-circle 20s ease-in-out infinite;
+}
+.hero-circle:nth-child(1) { width: 500px; height: 500px; top: -120px; right: -80px; animation-delay: 0s; }
+.hero-circle:nth-child(2) { width: 320px; height: 320px; bottom: 60px; left: -60px; animation-delay: -7s; }
+.hero-circle:nth-child(3) { width: 200px; height: 200px; top: 40%; right: 15%; animation-delay: -14s; }
+
+@keyframes float-circle {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(12px, -16px) scale(1.02); }
+  66% { transform: translate(-8px, 10px) scale(.98); }
+}
+
+.hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; padding: 80px 0; }
+
+.hero-label {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 24px;
+  background: rgba(59,130,246,.2); border: 1px solid rgba(59,130,246,.3);
+  color: #93C5FD; border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 600;
+}
+.hero-label-dot { width: 6px; height: 6px; border-radius: 50%; background: #60A5FA; animation: pulse-dot 2s ease infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(.8)} }
+
+.hero-title {
+  font-size: clamp(2.6rem, 5vw, 4rem); font-weight: 800;
+  color: var(--white); line-height: 1.1; margin-bottom: 20px; letter-spacing: -.02em;
+}
+.hero-title .accent { color: #60A5FA; }
+.hero-title .accent-green { color: #34D399; }
+
+.hero-desc { font-size: 17px; color: rgba(255,255,255,.7); line-height: 1.7; margin-bottom: 36px; max-width: 500px; }
+
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 28px; border-radius: var(--r-md);
+  background: var(--blue-light); color: var(--white);
+  font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700;
+  text-decoration: none; transition: all .2s;
+  box-shadow: 0 4px 20px rgba(59,130,246,.4);
+}
+.btn-primary:hover { background: #2563EB; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,.5); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 28px; border-radius: var(--r-md);
+  background: rgba(255,255,255,.08); color: var(--white); border: 1px solid rgba(255,255,255,.2);
+  font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 600;
+  text-decoration: none; transition: all .2s;
+}
+.btn-ghost:hover { background: rgba(255,255,255,.14); transform: translateY(-2px); }
+
+.hero-stats { display: flex; gap: 40px; margin-top: 48px; }
+.hero-stat-num { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; color: var(--white); line-height: 1; }
+.hero-stat-label { font-size: 13px; color: rgba(255,255,255,.55); margin-top: 4px; }
+.hero-stat-divider { width: 1px; background: rgba(255,255,255,.12); }
+
+/* ─ Phone mockup ─ */
+.hero-phone-wrap {
+  display: flex; justify-content: center; align-items: center;
+  position: relative; animation: phone-float 6s ease-in-out infinite;
+}
+@keyframes phone-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+
+.phone-shadow {
+  position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+  width: 160px; height: 20px; border-radius: 50%;
+  background: rgba(0,0,0,.3); filter: blur(12px);
+  animation: shadow-breathe 6s ease-in-out infinite;
+}
+@keyframes shadow-breathe { 0%,100%{transform:translateX(-50%) scaleX(1)} 50%{transform:translateX(-50%) scaleX(.8)} }
+
+.phone-frame {
+  width: 260px; height: 520px; border-radius: 38px;
+  background: #0a0a0f; border: 3px solid rgba(255,255,255,.12);
+  box-shadow: 0 32px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+  overflow: hidden; position: relative;
+}
+.phone-notch {
+  width: 80px; height: 18px; background: #0a0a0f; border-radius: 0 0 12px 12px;
+  margin: 0 auto; position: relative; z-index: 2;
+}
+.phone-screen { padding: 0 14px 14px; }
+
+.app-header { background: var(--navy); padding: 14px 14px 18px; margin: 0 -14px 14px; }
+.app-header-row { display: flex; align-items: center; justify-content: space-between; }
+.app-title { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; color: var(--white); }
+.app-avatar { width: 30px; height: 30px; border-radius: 50%; background: #60A5FA; display:flex; align-items:center; justify-content:center; }
+.app-greeting { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 4px; }
+
+.app-card {
+  background: var(--white); border-radius: 14px; padding: 12px;
+  margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+.app-card-title { font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.app-activities { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.app-act { border-radius: 10px; padding: 10px 8px; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.app-act-icon { width: 32px; height: 32px; border-radius: 9px; display:flex; align-items:center; justify-content:center; }
+.app-act-label { font-size: 9px; font-weight: 600; color: var(--text); text-align:center; }
+.act-1 { background: #EFF6FF; } .act-1 .app-act-icon { background: var(--blue); }
+.act-2 { background: #ECFDF5; } .act-2 .app-act-icon { background: var(--green); }
+.act-3 { background: #FFF7ED; } .act-3 .app-act-icon { background: #EA580C; }
+.act-4 { background: var(--purple-pale); } .act-4 .app-act-icon { background: var(--purple); }
+
+.app-progress-card { background: linear-gradient(135deg, var(--navy) 0%, #2563EB 100%); border-radius: 14px; padding: 12px; margin-bottom:10px; }
+.app-progress-label { font-size: 10px; color: rgba(255,255,255,.6); margin-bottom: 6px; }
+.app-progress-val { font-family:'Outfit',sans-serif; font-size:22px; font-weight:800; color:var(--white); }
+.app-progress-bar { height: 4px; background: rgba(255,255,255,.2); border-radius: 99px; margin-top:8px; overflow:hidden; }
+.app-progress-fill { height: 100%; background: #34D399; border-radius:99px; width: 72%; }
+
+/* ── LOGOS / TRUST ── */
+.trust { padding: 36px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--bg); }
+.trust-inner { display:flex; align-items:center; gap: 48px; justify-content:center; flex-wrap: wrap; }
+.trust-label { font-size: 13px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; }
+.trust-item { display: flex; align-items: center; gap: 10px; color: var(--text-2); font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600; }
+.trust-icon-wrap { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+/* ── DISABILITY CARDS ── */
+.dis-section { background: var(--bg); }
+.section-label { text-align: center; margin-bottom: 16px; }
+.section-title { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; text-align:center; color: var(--navy); margin-bottom: 16px; letter-spacing: -.02em; }
+.section-desc { font-size: 17px; color: var(--text-2); text-align:center; max-width: 560px; margin: 0 auto 56px; line-height: 1.7; }
+
+.dis-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+.dis-card {
+  background: var(--white); border-radius: var(--r-lg); padding: 28px 24px;
+  border: 1px solid var(--border); transition: all .3s;
+  position: relative; overflow: hidden;
+}
+.dis-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.dis-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: transparent; }
+
+.dis-card.intelectual::before { background: var(--amber); }
+.dis-card.tea::before { background: var(--blue); }
+.dis-card.motriz::before { background: var(--green); }
+.dis-card.auditiva::before { background: var(--purple); }
+.dis-card.visual::before { background: #DC2626; }
+.dis-card.desarrollo::before { background: #EA580C; }
+
+.dis-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.dis-name { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.dis-desc { font-size: 14px; color: var(--text-2); line-height: 1.6; margin-bottom: 14px; }
+.dis-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.dis-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+
+/* ── HOW IT WORKS ── */
+.how-section { background: var(--white); }
+.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; position: relative; }
+.steps-grid::before {
+  content: ''; position: absolute; top: 36px; left: 12.5%; right: 12.5%; height: 2px;
+  background: linear-gradient(90deg, var(--blue-pale), var(--blue-pale));
+  background-image: repeating-linear-gradient(90deg, var(--border), var(--border) 8px, transparent 8px, transparent 16px);
+  z-index: 0;
+}
+.step-card { text-align: center; position: relative; z-index: 1; }
+.step-num {
+  width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 800;
+  position: relative;
+}
+.step-num-inner { position: relative; z-index: 1; display:flex; align-items:center; justify-content:center; width:100%; height:100%; border-radius:50%; }
+
+.step-1 .step-num { background: var(--blue-pale); }
+.step-1 .step-num-inner { color: var(--blue); }
+.step-2 .step-num { background: var(--green-pale); }
+.step-2 .step-num-inner { color: var(--green); }
+.step-3 .step-num { background: var(--amber-pale); }
+.step-3 .step-num-inner { color: var(--amber); }
+.step-4 .step-num { background: var(--purple-pale); }
+.step-4 .step-num-inner { color: var(--purple); }
+
+.step-title { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.step-desc { font-size: 14px; color: var(--text-2); line-height: 1.6; }
+
+/* ── ROLES ── */
+.roles-section { background: var(--navy-dark); }
+.roles-section .section-title { color: var(--white); }
+.roles-section .section-desc { color: rgba(255,255,255,.6); }
+
+.roles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+.role-card {
+  border-radius: var(--r-lg); padding: 32px 28px;
+  border: 1px solid rgba(255,255,255,.08);
+  transition: all .3s; cursor: default;
+  background: rgba(255,255,255,.04);
+  position: relative; overflow: hidden;
+}
+.role-card::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  opacity: 0; transition: opacity .3s;
+}
+.role-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.07); }
+
+.role-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.role-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+.role-name { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; color: var(--white); }
+.role-access { font-size: 12px; color: rgba(255,255,255,.45); margin-top: 2px; }
+.role-desc { font-size: 14px; color: rgba(255,255,255,.6); line-height: 1.7; margin-bottom: 16px; }
+.role-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.role-feat { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(255,255,255,.75); }
+.role-feat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── FEATURES ── */
+.features-section { background: var(--bg); }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.feat-card {
+  background: var(--white); border-radius: var(--r-lg); padding: 28px 24px;
+  border: 1px solid var(--border); transition: all .3s;
+}
+.feat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: transparent; }
+.feat-icon { width: 48px; height: 48px; border-radius: 13px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.feat-title { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.feat-desc { font-size: 14px; color: var(--text-2); line-height: 1.65; }
+
+/* ── STATS ── */
+.stats-section {
+  background: linear-gradient(135deg, var(--navy) 0%, #1a4080 100%);
+  padding: 72px 0;
+}
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.stat-card { text-align: center; padding: 32px 16px; }
+.stat-number { font-family: 'Outfit', sans-serif; font-size: 3rem; font-weight: 800; color: var(--white); line-height: 1; margin-bottom: 8px; }
+.stat-number span { color: #60A5FA; }
+.stat-label { font-size: 14px; color: rgba(255,255,255,.6); line-height: 1.4; }
+.stat-divider { width: 1px; background: rgba(255,255,255,.1); }
+
+/* ── CTA ── */
+.cta-section { background: var(--white); padding: 96px 0; }
+.cta-inner {
+  background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #1a4a8a 100%);
+  border-radius: 28px; padding: 72px 64px;
+  display: flex; align-items: center; justify-content: space-between; gap: 48px;
+  position: relative; overflow: hidden;
+}
+.cta-inner::before {
+  content: ''; position: absolute; top: -80px; right: -80px;
+  width: 320px; height: 320px; border-radius: 50%;
+  background: rgba(59,130,246,.12); pointer-events:none;
+}
+.cta-inner::after {
+  content: ''; position: absolute; bottom: -60px; left: 30%;
+  width: 240px; height: 240px; border-radius: 50%;
+  background: rgba(16,185,129,.08); pointer-events:none;
+}
+.cta-title { font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 800; color: var(--white); margin-bottom: 12px; letter-spacing: -.02em; }
+.cta-desc { font-size: 16px; color: rgba(255,255,255,.65); max-width: 420px; line-height: 1.65; }
+.cta-btns { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
+.download-btn {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 28px; border-radius: var(--r-md); min-width: 220px;
+  background: var(--white); text-decoration: none; transition: all .25s;
+  box-shadow: 0 4px 16px rgba(0,0,0,.2);
+}
+.download-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 28px rgba(0,0,0,.28); }
+.download-btn-icon { width: 36px; height: 36px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
+.download-btn-sub { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+.download-btn-name { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: var(--navy); line-height: 1.1; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--navy-dark); padding: 48px 0 32px;
+}
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+.footer-brand { }
+.footer-logo { display:flex; align-items:center; gap:10px; margin-bottom:14px; text-decoration:none; }
+.footer-logo-mark { width:34px; height:34px; border-radius:9px; background:var(--blue-light); display:flex; align-items:center; justify-content:center; }
+.footer-logo-text { font-family:'Outfit',sans-serif; font-size:18px; font-weight:800; color:var(--white); letter-spacing:-.5px; }
+.footer-tagline { font-size:14px; color:rgba(255,255,255,.45); line-height:1.65; max-width:280px; }
+.footer-col-title { font-family:'Outfit',sans-serif; font-size:13px; font-weight:700; color:rgba(255,255,255,.35); text-transform:uppercase; letter-spacing:.1em; margin-bottom:16px; }
+.footer-links { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.footer-links a { font-size:14px; color:rgba(255,255,255,.55); text-decoration:none; transition:color .2s; }
+.footer-links a:hover { color:var(--white); }
+.footer-bottom { border-top:1px solid rgba(255,255,255,.08); padding-top:24px; display:flex; align-items:center; justify-content:space-between; }
+.footer-copy { font-size:13px; color:rgba(255,255,255,.3); }
+.footer-badges { display:flex; gap:10px; }
+.footer-badge { padding:5px 12px; border-radius:6px; font-size:11px; font-weight:700; border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.45); font-family:'Outfit',sans-serif; letter-spacing:.04em; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap:48px; text-align:center; }
+  .hero-btns { justify-content: center; }
+  .hero-stats { justify-content: center; }
+  .hero-phone-wrap { display: none; }
+  .dis-grid { grid-template-columns: 1fr 1fr; }
+  .steps-grid { grid-template-columns: 1fr 1fr; }
+  .steps-grid::before { display: none; }
+  .roles-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .cta-inner { flex-direction: column; padding: 48px 32px; text-align:center; }
+  .cta-btns { align-items: center; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .nav-links { display: none; }
+  .nav-mobile-btn { display: block; }
+}
+@media (max-width: 600px) {
+  .dis-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap:32px; }
+  .section { padding: 64px 0; }
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: bounce 2.5s ease infinite;
+}
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+.scroll-indicator-line { width: 1px; height: 32px; background: rgba(255,255,255,.25); }
+.scroll-indicator-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.4); }
+
+/* Accessibility feature bar */
+.access-bar { background: var(--navy); padding: 12px 0; }
+.access-bar-inner { display: flex; align-items: center; justify-content: center; gap: 36px; flex-wrap: wrap; }
+.access-item { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,.7); font-size: 13px; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo" aria-label="SEDI inicio">
+    <div class="nav-logo-mark">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M4 10C4 6.686 6.686 4 10 4s6 2.686 6 6-2.686 6-6 6-6-2.686-6-6z" stroke="#60A5FA" stroke-width="2"/>
+        <path d="M7 10h6M10 7v6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="nav-logo-text">SE<span>DI</span></span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#adaptaciones">Adaptaciones</a></li>
+    <li><a href="#como-funciona">Cómo funciona</a></li>
+    <li><a href="#roles">Roles</a></li>
+    <li><a href="#caracteristicas">Características</a></li>
+  </ul>
+
+  <a href="TU_LINK_EAS_AQUI" class="nav-cta">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Descargar App
+  </a>
+
+  <button class="nav-mobile-btn" aria-label="Menú" onclick="toggleMenu()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E3A5F" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg-circles">
+    <div class="hero-circle"></div>
+    <div class="hero-circle"></div>
+    <div class="hero-circle"></div>
+  </div>
+
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-label reveal">
+          <span class="hero-label-dot"></span>
+          Disponible para Android
+        </div>
+        <h1 class="hero-title reveal delay-1">
+          Educación <span class="accent">adaptada</span><br>a cada<br><span class="accent-green">alumno único</span>
+        </h1>
+        <p class="hero-desc reveal delay-2">
+          SEDI es una plataforma educativa diseñada específicamente para estudiantes con discapacidades. La app detecta el perfil de cada alumno y adapta automáticamente toda la interfaz.
+        </p>
+        <div class="hero-btns reveal delay-3">
+          <a href="TU_LINK_EAS_AQUI" class="btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Descargar gratis
+          </a>
+
+        </div>
+        <div class="hero-stats reveal delay-4">
+          <div>
+            <div class="hero-stat-num">100<span style="color:#60A5FA;font-size:1.4rem">+</span></div>
+            <div class="hero-stat-label">Alumnos atendidos</div>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div>
+            <div class="hero-stat-num">6</div>
+            <div class="hero-stat-label">Tipos de discapacidad</div>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div>
+            <div class="hero-stat-num">5</div>
+            <div class="hero-stat-label">Niveles educativos</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone mockup -->
+      <div class="hero-phone-wrap reveal-right">
+        <div class="phone-shadow"></div>
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="app-header">
+            <div class="app-header-row">
+              <div>
+                <div class="app-greeting">Bienvenido</div>
+                <div class="app-title">Carlos</div>
+              </div>
+              <div class="app-avatar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="phone-screen">
+            <div class="app-progress-card">
+              <div class="app-progress-label">Mi progreso hoy</div>
+              <div class="app-progress-val">72%</div>
+              <div class="app-progress-bar"><div class="app-progress-fill"></div></div>
+            </div>
+            <div class="app-card">
+              <div class="app-card-title">Actividades del día</div>
+              <div class="app-activities">
+                <div class="app-act act-1">
+                  <div class="app-act-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                  </div>
+                  <div class="app-act-label">Lectura</div>
+                </div>
+                <div class="app-act act-2">
+                  <div class="app-act-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  </div>
+                  <div class="app-act-label">Escritura</div>
+                </div>
+                <div class="app-act act-3">
+                  <div class="app-act-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                  </div>
+                  <div class="app-act-label">Video</div>
+                </div>
+                <div class="app-act act-4">
+                  <div class="app-act-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  </div>
+                  <div class="app-act-label">Logros</div>
+                </div>
+              </div>
+            </div>
+            <div class="app-card">
+              <div class="app-card-title">Mi Día</div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#10B981;flex-shrink:0;"></div>
+                  <div style="font-size:10px;color:#475569;">9:00 — Actividad de Secuencia</div>
+                  <div style="margin-left:auto;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#3B82F6;flex-shrink:0;"></div>
+                  <div style="font-size:10px;color:#475569;">10:30 — Actividad de Asociación</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:#E2E8F0;flex-shrink:0;"></div>
+                  <div style="font-size:10px;color:#94A3B8;">12:00 — Recreo</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-indicator-line"></div>
+    <div class="scroll-indicator-dot"></div>
+  </div>
+</section>
+
+<!-- ══ ACCESSIBILITY BAR ══ -->
+<div class="access-bar">
+  <div class="container">
+    <div class="access-bar-inner">
+      <div class="access-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Interfaz adaptable en tiempo real
+      </div>
+      <div class="access-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Datos seguros con Firebase
+      </div>
+      <div class="access-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        4 roles de usuario integrados
+      </div>
+      <div class="access-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Android
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DISABILITIES ══ -->
+<section class="section dis-section" id="adaptaciones">
+  <div class="container">
+    <div class="section-label reveal"><span class="badge tag-blue">Adaptaciones automáticas</span></div>
+    <h2 class="section-title reveal delay-1">Una app que <em style="color:var(--blue);font-style:normal">se adapta</em><br>a cada alumno</h2>
+    <p class="section-desc reveal delay-2">SEDI detecta el perfil de discapacidad de cada estudiante y ajusta automáticamente colores, tamaños, animaciones, audio y más.</p>
+
+    <div class="dis-grid">
+      <!-- Intelectual -->
+      <div class="dis-card intelectual reveal delay-1">
+        <div class="dis-icon" style="background:#FFFBEB;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-1.04.96"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 1.04.96"/></svg>
+        </div>
+        <div class="dis-name">Discapacidad Intelectual</div>
+        <div class="dis-desc">Interfaz simplificada con pictogramas, instrucciones paso a paso y síntesis de voz para apoyar la comprensión.</div>
+        <div class="dis-tags">
+          <span class="dis-tag" style="background:#FEF3C7;color:#92400E;">Pictogramas</span>
+          <span class="dis-tag" style="background:#FEF3C7;color:#92400E;">Voz TTS</span>
+          <span class="dis-tag" style="background:#FEF3C7;color:#92400E;">Paso a paso</span>
+        </div>
+      </div>
+
+      <!-- TEA -->
+      <div class="dis-card tea reveal delay-2">
+        <div class="dis-icon" style="background:#EFF6FF;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M3 3h18v18H3z" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+        </div>
+        <div class="dis-name">Trastorno del Espectro Autista</div>
+        <div class="dis-desc">Layout predecible, sin animaciones sorpresivas, agenda visual y temporizadores para reducir la ansiedad.</div>
+        <div class="dis-tags">
+          <span class="dis-tag" style="background:#DBEAFE;color:#1e40af;">Sin sorpresas</span>
+          <span class="dis-tag" style="background:#DBEAFE;color:#1e40af;">Agenda visual</span>
+          <span class="dis-tag" style="background:#DBEAFE;color:#1e40af;">Temporizadores</span>
+        </div>
+      </div>
+
+      <!-- Motriz -->
+      <div class="dis-card motriz reveal delay-3">
+        <div class="dis-icon" style="background:#ECFDF5;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v8M8 12h8M9 19l3 2 3-2"/></svg>
+        </div>
+        <div class="dis-name">Discapacidad Motriz</div>
+        <div class="dis-desc">Botones grandes ≥56dp, zonas de toque amplias, gestos simples y soporte para switch access.</div>
+        <div class="dis-tags">
+          <span class="dis-tag" style="background:#D1FAE5;color:#065f46;">Botones grandes</span>
+          <span class="dis-tag" style="background:#D1FAE5;color:#065f46;">1 columna</span>
+          <span class="dis-tag" style="background:#D1FAE5;color:#065f46;">Switch access</span>
+        </div>
+      </div>
+
+      <!-- Auditiva -->
+      <div class="dis-card auditiva reveal delay-1">
+        <div class="dis-icon" style="background:var(--purple-pale);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"><path d="M1 1l22 22M9 9v3a5 5 0 0 0 9.21 2.79M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </div>
+        <div class="dis-name">Discapacidad Auditiva</div>
+        <div class="dis-desc">Todo el contenido es visual. Subtítulos en video, vibración como feedback y alertas visuales sin depender del audio.</div>
+        <div class="dis-tags">
+          <span class="dis-tag" style="background:#EDE9FE;color:#5b21b6;">100% visual</span>
+          <span class="dis-tag" style="background:#EDE9FE;color:#5b21b6;">Subtítulos</span>
+          <span class="dis-tag" style="background:#EDE9FE;color:#5b21b6;">Vibración</span>
+        </div>
+      </div>
+
+      <!-- Visual -->
+      <div class="dis-card visual reveal delay-2">
+        <div class="dis-icon" style="background:#FFF1F2;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="dis-name">Discapacidad Visual</div>
+        <div class="dis-desc">Alto contraste, texto escalable ≥18sp, etiquetas para lector de pantalla y modo daltonismo.</div>
+        <div class="dis-tags">
+          <span class="dis-tag" style="background:#FEE2E2;color:#991b1b;">Alto contraste</span>
+          <span class="dis-tag" style="background:#FEE2E2;color:#991b1b;">Texto grande</span>
+          <span class="dis-tag" style="background:#FEE2E2;color:#991b1b;">Lector pantalla</span>
+        </div>
+      </div>
+
+      <!-- Desarrollo -->
+      <div class="dis-card desarrollo reveal delay-3">
+        <div class="dis-icon" style="background:#FFF7ED;">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="dis-name">Trastornos del Desarrollo</div>
+        <div class="dis-desc">Sesiones cortas, recompensas inmediatas, instrucciones multimodales y pausas programadas para mantener el foco.</div>
+        <div class="dis-tags">
+          <span class="dis-tag" style="background:#FFEDD5;color:#9a3412;">Sesiones cortas</span>
+          <span class="dis-tag" style="background:#FFEDD5;color:#9a3412;">Recompensas</span>
+          <span class="dis-tag" style="background:#FFEDD5;color:#9a3412;">Multimodal</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section class="section how-section" id="como-funciona">
+  <div class="container">
+    <div class="section-label reveal"><span class="badge tag-green">Proceso simple</span></div>
+    <h2 class="section-title reveal delay-1">Empezar es muy <em style="color:var(--green);font-style:normal">fácil</em></h2>
+    <p class="section-desc reveal delay-2">Cuatro pasos para que cada alumno tenga su experiencia personalizada desde el primer día.</p>
+
+    <div class="steps-grid">
+      <div class="step-card step-1 reveal delay-1">
+        <div class="step-num">
+          <div class="step-num-inner">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+        </div>
+        <div class="step-title">El directivo registra maestros</div>
+        <div class="step-desc">El administrador da de alta al personal docente desde su dashboard con acceso completo a la institución.</div>
+      </div>
+      <div class="step-card step-2 reveal delay-2">
+        <div class="step-num">
+          <div class="step-num-inner">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 10h8M8 14h5"/></svg>
+          </div>
+        </div>
+        <div class="step-title">El maestro invita al tutor</div>
+        <div class="step-desc">Se genera un código único que el padre o tutor usa para registrarse sin complicaciones.</div>
+      </div>
+      <div class="step-card step-3 reveal delay-3">
+        <div class="step-num">
+          <div class="step-num-inner">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+        </div>
+        <div class="step-title">El tutor registra al alumno</div>
+        <div class="step-desc">Formulario de 3 pasos donde se configura el perfil completo de discapacidad y preferencias visuales.</div>
+      </div>
+      <div class="step-card step-4 reveal delay-4">
+        <div class="step-num">
+          <div class="step-num-inner">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+        </div>
+        <div class="step-title">El alumno aprende</div>
+        <div class="step-desc">Acceso con PIN de 4 dígitos. La app ya está adaptada. El alumno solo tiene que aprender y disfrutar.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ROLES ══ -->
+<section class="section roles-section" id="roles">
+  <div class="container">
+    <div class="section-label reveal"><span class="badge" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);">Sistema de roles</span></div>
+    <h2 class="section-title reveal delay-1">Diseñado para <em style="color:#60A5FA;font-style:normal">toda la comunidad</em></h2>
+    <p class="section-desc reveal delay-2">Cuatro perfiles con accesos y funcionalidades pensadas para cada actor del proceso educativo.</p>
+
+    <div class="roles-grid">
+      <!-- Admin -->
+      <div class="role-card reveal delay-1">
+        <div class="role-header">
+          <div class="role-icon" style="background:rgba(124,58,237,.2);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="role-name">Directivo</div>
+            <div class="role-access">Acceso con email y contraseña</div>
+          </div>
+        </div>
+        <div class="role-desc">Control total de la institución: gestión de personal, estadísticas globales y configuración de la plataforma.</div>
+        <ul class="role-features">
+          <li class="role-feat"><div class="role-feat-dot" style="background:#A78BFA;"></div>Registrar y gestionar maestros</li>
+          <li class="role-feat"><div class="role-feat-dot" style="background:#A78BFA;"></div>Ver estadísticas de toda la escuela</li>
+          <li class="role-feat"><div class="role-feat-dot" style="background:#A78BFA;"></div>Configurar grupos y niveles</li>
+        </ul>
+      </div>
+
+      <!-- Maestro -->
+      <div class="role-card reveal delay-2">
+        <div class="role-header">
+          <div class="role-icon" style="background:rgba(37,99,235,.2);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div>
+            <div class="role-name">Maestro</div>
+            <div class="role-access">Invitado por el directivo</div>
+          </div>
+        </div>
+        <div class="role-desc">Crea actividades personalizadas, las asigna a alumnos o grupos, y hace seguimiento del progreso individual.</div>
+        <ul class="role-features">
+          <li class="role-feat"><div class="role-feat-dot" style="background:#60A5FA;"></div>Crear actividades multimedia (5 pasos)</li>
+          <li class="role-feat"><div class="role-feat-dot" style="background:#60A5FA;"></div>Asignar a grupos de alumnos</li>
+          <li class="role-feat"><div class="role-feat-dot" style="background:#60A5FA;"></div>Chat directo con tutores</li>
+          <li class="role-feat"><div class="role-feat-dot" style="background:#60A5FA;"></div>Agenda visual por día y grupo</li>
+        </ul>
+      </div>
+
+      <!-- Tutor -->
+      <div class="role-card reveal delay-3">
+        <div class="role-header">
+          <div class="role-icon" style="background:rgba(5,150,105,.2);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div>
+            <div class="role-name">Tutor / Padre</div>
+            <div class="role-access">Registro con código del maestro</div>
+          </div>
+        </div>
+        <div class="role-desc">El tutor registra al alumno con su perfil completo y presta su celular para que el alumno acceda con PIN.</div>
+        <ul class="role-features">
+          <li class="role-feat"><div class="role-feat-dot" style="background:#34D399;"></div>Registrar alumno (perfil completo)</li>
+          <li class="role-feat"><div class="role-feat-dot" style="background:#34D399;"></div>Monitorear progreso en tiempo real</li>
+          <li class="role-feat"><div class="role-feat-dot" style="background:#34D399;"></div>Chat con el maestro</li>
+          <li class="role-feat"><div class="role-feat-dot" style="background:#34D399;"></div>Prestar celular al alumno</li>
+        </ul>
+      </div>
+
+      <!-- Alumno -->
+      <div class="role-card reveal delay-4">
+        <div class="role-header">
+          <div class="role-icon" style="background:rgba(217,119,6,.2);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div>
+            <div class="role-name">Alumno</div>
+            <div class="role-access">PIN de 4 dígitos</div>
+          </div>
+        </div>
+        <div class="role-desc">Experiencia adaptada al 100%. La app ya está configurada según su perfil cuando el alumno entra.</div>
+        <ul class="role-features">
+          <li class="role-feat"><div class="role-feat-dot" style="background:#FBBF24;"></div>Actividades adaptadas (selección, asociación, secuencia)</li>
+          <li class="role-feat"><div class="role-feat-dot" style="background:#FBBF24;"></div>Progreso gamificado con insignias</li>
+          <li class="role-feat"><div class="role-feat-dot" style="background:#FBBF24;"></div>Rutinas diarias visuales</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section class="section features-section" id="caracteristicas">
+  <div class="container">
+    <div class="section-label reveal"><span class="badge tag-navy">Características</span></div>
+    <h2 class="section-title reveal delay-1">Todo lo que necesita<br>una institución <em style="color:var(--navy);font-style:normal">educativa</em></h2>
+    <p class="section-desc reveal delay-2">SEDI integra las herramientas esenciales para gestionar el aprendizaje especial de forma digital y eficiente.</p>
+
+    <div class="features-grid">
+      <div class="feat-card reveal delay-1">
+        <div class="feat-icon" style="background:#EFF6FF;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div class="feat-title">Actividades multimedia</div>
+        <div class="feat-desc">Crea actividades con imágenes, audio y video en 5 pasos intuitivos. Tres tipos: selección, asociación y secuencia.</div>
+      </div>
+      <div class="feat-card reveal delay-2">
+        <div class="feat-icon" style="background:#ECFDF5;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="feat-title">Reportes de progreso</div>
+        <div class="feat-desc">Estadísticas detalladas por alumno, grupo e institución. Visualiza avances con gráficas claras y exportables.</div>
+      </div>
+      <div class="feat-card reveal delay-3">
+        <div class="feat-icon" style="background:var(--purple-pale);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="feat-title">Chat maestro-tutor</div>
+        <div class="feat-desc">Comunicación directa entre docentes y familias dentro de la app, sin necesitar apps externas.</div>
+      </div>
+      <div class="feat-card reveal delay-1">
+        <div class="feat-icon" style="background:#FFF7ED;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="feat-title">Agenda visual</div>
+        <div class="feat-desc">Timeline diario con todas las actividades programadas por grupo. El alumno siempre sabe qué viene después.</div>
+      </div>
+      <div class="feat-card reveal delay-2">
+        <div class="feat-icon" style="background:#FFFBEB;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="feat-title">Sistema de recompensas</div>
+        <div class="feat-desc">Insignias, logros y jardín de estrellas que motivan al alumno a completar sus actividades diarias con entusiasmo.</div>
+      </div>
+      <div class="feat-card reveal delay-3">
+        <div class="feat-icon" style="background:#FFF1F2;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <div class="feat-title">Rutinas diarias</div>
+        <div class="feat-desc">Secuencias de pasos visuales que ayudan al alumno a desarrollar autonomía e independencia en sus actividades cotidianas.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STATS ══ -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card reveal delay-1">
+        <div class="stat-number">100<span>+</span></div>
+        <div class="stat-label">Alumnos con<br>necesidades especiales</div>
+      </div>
+      <div class="stat-card reveal delay-2">
+        <div class="stat-number">6</div>
+        <div class="stat-label">Tipos de discapacidad<br>atendidos</div>
+      </div>
+      <div class="stat-card reveal delay-3">
+        <div class="stat-number">5</div>
+        <div class="stat-label">Niveles educativos<br>cubiertos</div>
+      </div>
+      <div class="stat-card reveal delay-4">
+        <div class="stat-number">3<span>+</span></div>
+        <div class="stat-label">Tipos de actividades<br>interactivas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta-section" id="descargar">
+  <div class="container">
+    <div class="cta-inner reveal">
+      <div>
+        <div style="margin-bottom:16px;">
+          <span class="badge" style="background:rgba(96,165,250,.15);color:#60A5FA;border:1px solid rgba(96,165,250,.25);">Descarga gratuita</span>
+        </div>
+        <div class="cta-title">Transforma la educación<br>especial en tu institución</div>
+        <div class="cta-desc">SEDI está diseñado para funcionar desde el primer día. Sin configuraciones complejas, sin capacitación técnica extensa.</div>
+      </div>
+      <div class="cta-btns" style="position:relative;z-index:1;">
+        <a href="TU_LINK_EAS_AQUI" class="download-btn" style="min-width:260px;">
+          <div class="download-btn-icon" style="background:#E8F5E9;border-radius:10px;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <path d="M6 18L3.5 21 2 19.5 4.5 17" stroke="#388E3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M18 18l2.5 3 1.5-1.5-2.5-2.5" stroke="#388E3C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6.5 3.5L4 6l7 7 7-7-2.5-2.5" stroke="#4CAF50" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="13" r="3.5" stroke="#2E7D32" stroke-width="1.8"/>
+              <path d="M12 8V5M9 6l3-3 3 3" stroke="#4CAF50" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="download-btn-sub">Descargar para</div>
+            <div class="download-btn-name">Android</div>
+          </div>
+          <svg style="margin-left:auto;flex-shrink:0;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </a>
+        <div style="font-size:12px;color:rgba(255,255,255,.4);text-align:center;margin-top:4px;">Archivo APK · Requiere Android 8.0 o superior</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="footer-logo">
+          <div class="footer-logo-mark">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10C4 6.686 6.686 4 10 4s6 2.686 6 6-2.686 6-6 6-6-2.686-6-6z" stroke="white" stroke-width="1.5"/>
+              <path d="M7 10h6M10 7v6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="footer-logo-text">SEDI</span>
+        </a>
+        <div class="footer-tagline">Sistema Educativo Dinámico Interactivo. Educación especial adaptada a cada alumno único.</div>
+      </div>
+      <div>
+        <div class="footer-col-title">App</div>
+        <ul class="footer-links">
+          <li><a href="#adaptaciones">Adaptaciones</a></li>
+          <li><a href="#como-funciona">Cómo funciona</a></li>
+          <li><a href="#roles">Roles</a></li>
+          <li><a href="#caracteristicas">Características</a></li>
+          <li><a href="#descargar">Descargar</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Accesibilidad</div>
+        <ul class="footer-links">
+          <li><a href="#">Discapacidad Intelectual</a></li>
+          <li><a href="#">TEA</a></li>
+          <li><a href="#">Discapacidad Motriz</a></li>
+          <li><a href="#">Discapacidad Auditiva</a></li>
+          <li><a href="#">Discapacidad Visual</a></li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 SEDI — Sistema Educativo Dinámico Interactivo. México.</div>
+
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Navbar scroll ──
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// ── Scroll reveal ──
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => observer.observe(el));
+
+// ── Counter animation ──
+function animateCounter(el, target, suffix) {
+  let start = 0;
+  const duration = 1400;
+  const step = timestamp => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.querySelector('.num').textContent = Math.floor(eased * target) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+const statsObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const nums = document.querySelectorAll('.stat-number');
+      const targets = [100, 6, 5, 3];
+      const suffixes = ['+', '', '', '+'];
+      nums.forEach((num, i) => {
+        const span = num.querySelector('span');
+        const spanText = span ? span.textContent : '';
+        const baseText = num.textContent.replace(spanText, '').replace('+', '').trim();
+        let count = 0;
+        const target = targets[i];
+        const suf = suffixes[i];
+        num.textContent = '';
+        const numSpan = document.createElement('span');
+        numSpan.className = 'num';
+        numSpan.textContent = '0';
+        num.appendChild(numSpan);
+        if (span && suf) {
+          const sufSpan = document.createElement('span');
+          sufSpan.textContent = suf;
+          num.appendChild(sufSpan);
+        }
+        let start = null;
+        const animate = (ts) => {
+          if (!start) start = ts;
+          const p = Math.min((ts - start) / 1200, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          numSpan.textContent = Math.floor(eased * target);
+          if (p < 1) requestAnimationFrame(animate);
+        };
+        requestAnimationFrame(animate);
+      });
+      statsObs.disconnect();
+    }
+  });
+}, { threshold: 0.4 });
+const statsSection = document.querySelector('.stats-section');
+if (statsSection) statsObs.observe(statsSection);
+
+// ── Mobile menu (simple) ──
+function toggleMenu() {
+  const links = document.querySelector('.nav-links');
+  if (!links) return;
+  if (links.style.display === 'flex') {
+    links.style.display = '';
+    links.style.position = '';
+    links.style.flexDirection = '';
+    links.style.top = '';
+    links.style.left = '';
+    links.style.right = '';
+    links.style.background = '';
+    links.style.padding = '';
+    links.style.boxShadow = '';
+    links.style.zIndex = '';
+    links.style.gap = '';
+  } else {
+    links.style.display = 'flex';
+    links.style.flexDirection = 'column';
+    links.style.position = 'fixed';
+    links.style.top = '68px';
+    links.style.left = '0';
+    links.style.right = '0';
+    links.style.background = 'rgba(255,255,255,.97)';
+    links.style.padding = '20px 32px 28px';
+    links.style.boxShadow = '0 12px 40px rgba(0,0,0,.12)';
+    links.style.zIndex = '99';
+    links.style.gap = '20px';
+  }
+}
+
+// close on link click
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', () => {
+    const links = document.querySelector('.nav-links');
+    if (links && window.innerWidth < 900) {
+      links.style.display = '';
+    }
+  });
+});
+</script>
+</body>
+</html>
